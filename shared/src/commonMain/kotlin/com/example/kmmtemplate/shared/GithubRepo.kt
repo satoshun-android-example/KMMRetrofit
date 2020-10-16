@@ -3,11 +3,15 @@ package com.example.kmmtemplate.shared
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.serialization.Required
-import kotlinx.serialization.SerialName
+import kotlinx.serialization.*
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlin.reflect.KClass
 
+@Target(AnnotationTarget.PROPERTY, AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class TestAnnotation
+
+@TestAnnotation
 @Serializable
 data class GithubRepo(
   @SerialName("name") val repoName: String = "default"

@@ -7,10 +7,10 @@ import androidx.lifecycle.lifecycleScope
 import com.example.kmmtemplate.shared.GithubApi
 import com.example.kmmtemplate.shared.Greeting
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.json.serializer.*
+import io.ktor.client.features.json.serializer.KotlinxSerializer
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -53,20 +53,20 @@ class MainActivity : AppCompatActivity() {
       }
     )
 
-    lifecycleScope.launchWhenStarted {
-      val repos = gitHubApi.getRepos("satoshun")
-      println(repos)
-    }
+//    lifecycleScope.launchWhenStarted {
+//      val repos = gitHubApi.getRepos("satoshun")
+//      println("ktor $repos")
+//    }
 
     val contentType = "application/json".toMediaType()
     val retrofitCreator = Retrofit.Builder()
       .baseUrl("https://api.github.com")
-      .addConverterFactory(json.asConverterFactory(contentType))
-      .addConverterFactory(GsonConverterFactory.create())
-//      .addConverterFactory(KotlinxGsonFactory(
-//        kotlinx = json.asConverterFactory(contentType),
-//        gson = GsonConverterFactory.create()
-//      ))
+//      .addConverterFactory(json.asConverterFactory(contentType))
+//      .addConverterFactory(GsonConverterFactory.create())
+      .addConverterFactory(KotlinxGsonFactory(
+        kotlinx = json.asConverterFactory(contentType),
+        gson = GsonConverterFactory.create()
+      ))
       .client(okHttpClient)
       .build()
 

@@ -1,54 +1,48 @@
 package com.example.kmmtemplate.androidApp
 
+import kotlinx.serialization.Serializable
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Converter
 import retrofit2.Retrofit
+import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 class KotlinxGsonFactory(
-    private val kotlinx: Converter.Factory,
-    private val gson: Converter.Factory
+  private val kotlinx: Converter.Factory,
+  private val gson: Converter.Factory
 ) : Converter.Factory() {
-    override fun responseBodyConverter(
-        type: Type,
-        annotations: Array<Annotation>,
-        retrofit: Retrofit
-    ): Converter<ResponseBody, *>? =
-        runCatching { kotlinx.responseBodyConverter(type, annotations, retrofit) }
-            .onFailure { gson.responseBodyConverter(type, annotations, retrofit) }
-            .getOrThrow()
+  override fun responseBodyConverter(
+    type: Type,
+    annotations: Array<Annotation>,
+    retrofit: Retrofit
+  ): Converter<ResponseBody, *>? {
+    return if (isKotlinx(type)) kotlinx.responseBodyConverter(type, annotations, retrofit)
+    else gson.responseBodyConverter(type, annotations, retrofit)
+  }
 
-    override fun requestBodyConverter(
-        type: Type,
-        parameterAnnotations: Array<Annotation>,
-        methodAnnotations: Array<Annotation>,
-        retrofit: Retrofit
-    ): Converter<*, RequestBody>? =
-        runCatching {
-            kotlinx.requestBodyConverter(
-                type,
-                parameterAnnotations,
-                methodAnnotations,
-                retrofit
-            )
-        }
-            .onFailure {
-                gson.requestBodyConverter(
-                    type,
-                    parameterAnnotations,
-                    methodAnnotations,
-                    retrofit
-                )
-            }
-            .getOrThrow()
+  private fun isKotlinx(type: Type): Boolean {
+    if (type !is ParameterizedType) return false
+    val annotations = (type.actualTypeArguments.first() as? Class<*>)?.annotations ?: return false
+    return annotations.any { it is Serializable }
+  }
 
-    override fun stringConverter(
-        type: Type,
-        annotations: Array<Annotation>,
-        retrofit: Retrofit
-    ): Converter<*, String>? =
-        runCatching { kotlinx.stringConverter(type, annotations, retrofit) }
-            .onFailure { gson.stringConverter(type, annotations, retrofit) }
-            .getOrNull()
+  override fun requestBodyConverter(
+    type: Type,
+    parameterAnnotations: Array<Annotation>,
+    methodAnnotations: Array<Annotation>,
+    retrofit: Retrofit
+  ): Converter<*, RequestBody>? {
+    TODO()
+  }
+
+  override fun stringConverter(
+    type: Type,
+    annotations: Array<Annotation>,
+    retrofit: Retrofit
+  ): Converter<*, String>? {
+    val isKotlinX = annotations.any { it is Serializable }
+    return if (isKotlinX) kotlinx.stringConverter(type, annotations, retrofit)
+    else gson.stringConverter(type, annotations, retrofit)
+  }
 }
