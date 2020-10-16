@@ -36,8 +36,7 @@ class KotlinxGsonFactory(
     annotations: Array<Annotation>,
     retrofit: Retrofit
   ): Converter<*, String>? {
-    val isKotlinX = annotations.any { it is Serializable }
-    return if (isKotlinX) kotlinx.stringConverter(type, annotations, retrofit)
+    return if (isKotlinx(type)) kotlinx.stringConverter(type, annotations, retrofit)
     else gson.stringConverter(type, annotations, retrofit)
   }
 
