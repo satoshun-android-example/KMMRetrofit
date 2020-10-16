@@ -73,14 +73,23 @@ class MainActivity : AppCompatActivity() {
     val kotlinxGithubApi = retrofitCreator.create(RetrofitKotlinxGitHubApi::class.java)
 
     lifecycleScope.launchWhenStarted {
-      val repos = kotlinxGithubApi.getRepos("satoshun")
-      println("kotlinx $repos")
+//      val repos = kotlinxGithubApi.getRepos("satoshun")
+//      println("kotlinx repos $repos")
+//
+//      val user = kotlinxGithubApi.getUser("satoshun")
+//      println("kotlinx user $user")
+
+//      val userResponse = kotlinxGithubApi.getUserResponse("satoshun")
+//      println("kotlinx userResponse ${userResponse.body()}")
+
+      val reposResponse = kotlinxGithubApi.getReposResponse("satoshun")
+      println("kotlinx reposResponse ${reposResponse.body()}")
     }
 
-    val gsonGithubApi = retrofitCreator.create(RetrofitGsonGitHubApi::class.java)
-    lifecycleScope.launchWhenStarted {
-      val repos = gsonGithubApi.getRepos("satoshun")
-      println("gsonGithubApi $repos")
-    }
+//    val gsonGithubApi = retrofitCreator.create(RetrofitGsonGitHubApi::class.java)
+//    lifecycleScope.launchWhenStarted {
+//      val repos = gsonGithubApi.getRepos("satoshun")
+//      println("gsonGithubApi $repos")
+//    }
   }
 }

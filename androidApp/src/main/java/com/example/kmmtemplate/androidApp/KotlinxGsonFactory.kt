@@ -21,19 +21,14 @@ class KotlinxGsonFactory(
     else gson.responseBodyConverter(type, annotations, retrofit)
   }
 
-  private fun isKotlinx(type: Type): Boolean {
-    if (type !is ParameterizedType) return false
-    val annotations = (type.actualTypeArguments.first() as? Class<*>)?.annotations ?: return false
-    return annotations.any { it is Serializable }
-  }
-
   override fun requestBodyConverter(
     type: Type,
     parameterAnnotations: Array<Annotation>,
     methodAnnotations: Array<Annotation>,
     retrofit: Retrofit
   ): Converter<*, RequestBody>? {
-    TODO()
+    return if (isKotlinx(type)) kotlinx.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
+    else gson.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
   }
 
   override fun stringConverter(
@@ -44,5 +39,12 @@ class KotlinxGsonFactory(
     val isKotlinX = annotations.any { it is Serializable }
     return if (isKotlinX) kotlinx.stringConverter(type, annotations, retrofit)
     else gson.stringConverter(type, annotations, retrofit)
+  }
+
+  private fun isKotlinx(type: Type?): Boolean {
+    type ?: return false
+    if (type is ParameterizedType) return isKotlinx(type.actualTypeArguments.firstOrNull())
+    if (type !is Class<*>) return false
+    return type.annotations.any { it is Serializable }
   }
 }
