@@ -55,6 +55,8 @@ kotlin {
         api(kotlin("stdlib-jdk7"))
         api("io.ktor:ktor-client-okhttp:$ktorVersion")
         api("io.ktor:ktor-client-serialization-jvm:$ktorVersion")
+
+        implementation("com.squareup.retrofit2:retrofit:2.9.0")
       }
     }
     val androidTest by getting {
